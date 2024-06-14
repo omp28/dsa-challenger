@@ -1,5 +1,4 @@
 // create a endpoint to register the user
-
 router.post("/register", async (req, res) => {
   const { name, email, password } = req.body;
   const User = require("../models/User").default;
