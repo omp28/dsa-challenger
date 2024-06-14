@@ -1,12 +1,16 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
 // middleware to ensure MongoDB connection
-const connectDB = (handler) => async (req, res) => {
-  if (mongoose.connections[0].readyState) {
+const connectDB = function (handler) {
+  return async function (req, res) {
+    if (mongoose.connections[0].readyState) {
+      console.log("Connected to database:", mongoose.connections[0].name);
+      return handler(req, res);
+    }
+    await mongoose.connect(process.env.MONGODB_URI);
+    console.log("Connected to database:", mongoose.connections[0].name);
     return handler(req, res);
-  }
-  await mongoose.connect(process.env.MONGODB_URI);
-  return handler(req, res);
+  };
 };
 
-export default connectDB;
+module.exports = connectDB;

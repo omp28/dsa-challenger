@@ -1,19 +1,40 @@
-// create a endpoint to register the user
+const express = require("express");
+const bcrypt = require("bcrypt");
+const User = require("../models/User");
+const connectDB = require("../middleware/mongoose");
 
-router.post("/register", async (req, res) => {
-  const { name, email, password } = req.body;
-  const User = require("../models/User").default;
-  const bcrypt = require("bcrypt");
-  const saltRounds = 10;
-  const salt = bcrypt.genSaltSync(saltRounds);
-  const hash = bcrypt.hashSync(password, salt);
-  const user = new User({
-    name,
-    email,
-    password: hash,
-  });
-  await user.save();
-  res.status(200).json({
-    message: "User registered successfully",
-  });
-});
+const router = express.Router();
+
+router.post(
+  "/register",
+  connectDB(async (req, res) => {
+    const { name, email, password } = req.body;
+
+    try {
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+        return res.status(400).json({ message: "User already exists" });
+      }
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      const newUser = new User({
+        id: Date.now(),
+        name,
+        email,
+        password: hashedPassword,
+      });
+
+      console.log("newUser", newUser);
+
+      await newUser.save();
+
+      res.status(201).json({ message: "User registered successfully" });
+    } catch (error) {
+      console.error("Error during user registration:", error);
+      res.status(500).json({ message: "Server error" });
+    }
+  })
+);
+
+module.exports = router;

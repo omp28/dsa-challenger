@@ -1,3 +1,5 @@
+// backend/models/User.js
+
 const mongoose = require("mongoose");
 
 const UserSchema = new mongoose.Schema(
@@ -17,8 +19,7 @@ const UserSchema = new mongoose.Schema(
       },
     ],
   },
-  { timeStamp: true }
+  { timestamps: true }
 );
 
-mongoose.models = {};
-export default mongoose.model("User", UserSchema);
+module.exports = mongoose.models.User || mongoose.model("User", UserSchema);
