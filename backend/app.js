@@ -20,11 +20,6 @@ app.get("/", (req, res) => {
   console.log("request received");
 });
 
-app.post("/test", (req, res) => {
-  console.log("request received");
-  res.send("test");
-});
-
 app.listen(PORT, (error) => {
   if (error) {
     console.error("Error starting server:", error);

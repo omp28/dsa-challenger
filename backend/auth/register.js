@@ -1,9 +1,11 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const connectDB = require("../middleware/mongoose");
 
 const router = express.Router();
+const JWT_SECRET = process.env.JWT_SECRET;
 
 router.post(
   "/register",
@@ -25,11 +27,13 @@ router.post(
         password: hashedPassword,
       });
 
-      console.log("newUser", newUser);
-
       await newUser.save();
 
-      res.status(201).json({ message: "User registered successfully" });
+      const token = jwt.sign({ userId: newUser._id }, JWT_SECRET, {
+        expiresIn: "1h",
+      });
+
+      res.status(201).json({ message: "User registered successfully", token });
     } catch (error) {
       console.error("Error during user registration:", error);
       res.status(500).json({ message: "Server error" });
