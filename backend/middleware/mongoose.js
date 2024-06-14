@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 
-// middleware to ensure MongoDB connection
 const connectDB = function (handler) {
   return async function (req, res) {
     if (mongoose.connections[0].readyState) {
